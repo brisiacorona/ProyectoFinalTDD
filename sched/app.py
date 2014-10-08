@@ -27,6 +27,7 @@ def appointment_create():
 
 
 @app.route(
-    '/ appointments/<int:appointment_id>/delete/', methods=['DELETE'])
+    '/appointments/<int:appointment_id>/delete/', methods=['DELETE'])
 def appointment_delete(appointment_id):
     raise NotImplementedError('DELETE')
+
