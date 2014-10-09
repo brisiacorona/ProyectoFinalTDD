@@ -44,10 +44,10 @@ if __name__ == '__main__':
     session = Session()
 
     now = datetime.now()
-session.add(Appointment(
+    session.add(Appointment(
     title='Important Meeting',
     start=now + timedelta(days=3),
     end=now + timedelta(days=3, seconds=3600),
     allday=False,
     location='The Office'))
-session.commit()
+    session.commit()
