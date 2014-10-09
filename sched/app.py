@@ -5,7 +5,7 @@ app = Flask(__name__)
 @app.route('/appointments/')
 def appointment_list():
     return 'Listing of all appointments we have.'
-
+    #http://localhost:8080/appointments/
 
 @app.route('/appointments/<int:appointment_id>/')
 def appointment_detail(appointment_id):
@@ -18,17 +18,20 @@ def appointment_detail(appointment_id):
 def appointment_edit(appointment_id):
     return 'Form to edit appointment #.'.format(appointment_id)
 
-
-@app.route(
-    '/appointments/create/',
-    methods=['GET', 'POST'])
-def appointment_create():
-    return 'Form to create a new appointment.'
-
-
 @app.route(
     '/appointments/<int:appointment_id>/delete/', methods=['DELETE'])
 def appointment_delete(appointment_id):
     raise NotImplementedError('DELETE')
+
+@app.route(
+    '/appointments/create/',
+    methods=['GET', 'POST'])
+def appointment_delete(appointment_id):
+    return 'Form to create a new appointment.'
+
+@app.route('/static/imag/favicon.ico')
+def appointment_list():
+    #http://localhost:8080/static/img/favicon.ico
+
 if __name__ == '__main__':
     app.run('0.0.0.0', 8080)
