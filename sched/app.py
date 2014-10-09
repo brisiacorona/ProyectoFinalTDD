@@ -9,8 +9,10 @@ def appointment_list():
 
 @app.route('/appointments/<int:appointment_id>/')
 def appointment_detail(appointment_id):
-    return 'Detail of appointment #{}.'.format(appointment_id)
-
+edit_url = url_for('appointment_edit',
+appointment_id=appointment_id)
+# Return the URL string just for demonstration.
+return edit_url
 
 @app.route(
     '/appointments/<int:appointment_id>/edit/',
