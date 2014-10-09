@@ -9,10 +9,8 @@ def appointment_list():
 
 @app.route('/appointments/<int:appointment_id>/')
 def appointment_detail(appointment_id):
-edit_url = url_for('appointment_edit',
-appointment_id=appointment_id)
-# Return the URL string just for demonstration.
-return edit_url
+    return 'Detail of appointment #{}.'.format(appointment_id)
+
 
 @app.route(
     '/appointments/<int:appointment_id>/edit/',
@@ -34,6 +32,3 @@ def appointment_delete(appointment_id):
     raise NotImplementedError('DELETE')
 if __name__ == '__main__':
     app.run('0.0.0.0', 8080)
-
-
-
