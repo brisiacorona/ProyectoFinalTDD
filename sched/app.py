@@ -2,7 +2,7 @@ from flask import Flask
 from flask.ext.sqlalchemy import SQLAlchemy
 from sched.models import Base
 from flask import render_template
-from flask import redirect, render_template
+from flask import *
 from flask import request, url_for
 from sched.forms import AppointmentForm
 from sched.models import Appointment
@@ -24,20 +24,43 @@ def index():
 
 @app.route('/appointments/')
 def appointment_list():
-    return 'Listing of all appointments we have.'
-    # http://localhost:8080/appointments/
+    """Provide HTML listing of all appointments."""
+# Query: Get all Appointment objects, sorted by date.
+    appts = (db.session.query(Appointment)
+             .order_by(Appointment.start.asc()).all())
+    return render_template('appointment/index.html',
+                           appts=appts)
 
 
 @app.route('/appointments/<int:appointment_id>/')
 def appointment_detail(appointment_id):
-    return 'Detail of appointment #{}.'.format(appointment_id)
+    """Provide HTML page with a given appointment."""
+# Query: get Appointment object by ID.
+    appt = db.session.query(Appointment).get(appointment_id)
+    if appt is None:
+        # Abort with Not Found.
+        abort(404)
+    return render_template('appointment/detail.html',
+                           appt=appt)
 
 
 @app.route(
     '/appointments/<int:appointment_id>/edit/',
     methods=['GET', 'POST'])
 def appointment_edit(appointment_id):
-    return 'Form to edit appointment #.'.format(appointment_id)
+    """Provide HTML form to edit a given appointment."""
+    appt = db.session.query(Appointment).get(appointment_id)
+    if appt is None:
+        abort(404)
+        form = AppointmentForm(request.form, appt)
+    if request.method == 'POST' and form.validate():
+        form.populate_obj(appt)
+        db.session.commit()
+# Success. Send the user back to the detail view.
+    return redirect(url_for('appointment_detail',
+                            appointment_id=appt.id))
+    return render_template('appointment/edit.html',
+                           form=form)
 
 
 @app.route(
