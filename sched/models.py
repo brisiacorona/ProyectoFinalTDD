@@ -33,6 +33,3 @@ def duration(self):
 def __repr__(self):
     return (u'<{self.__class__.__name__}: {self.id}>'
             .format(self=self))
-
-if __name__ == '__main__':
-	main()

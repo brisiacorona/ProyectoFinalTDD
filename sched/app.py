@@ -1,11 +1,22 @@
 from flask import Flask
+from flask.ext.sqlalchemy import SQLAlchemy
+from sched.models import Base
 app = Flask(__name__)
+
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///sched.db'
+# Use Flask-SQLAlchemy for its engine and session
+# configuration. Load the extension, giving it the app object,
+# and override its default Model class with the pure
+# SQLAlchemy declarative Base class.
+db = SQLAlchemy(app)
+db.Model = Base
 
 
 @app.route('/appointments/')
 def appointment_list():
     return 'Listing of all appointments we have.'
-    #http://localhost:8080/appointments/
+    # http://localhost:8080/appointments/
+
 
 @app.route('/appointments/<int:appointment_id>/')
 def appointment_detail(appointment_id):
@@ -18,10 +29,12 @@ def appointment_detail(appointment_id):
 def appointment_edit(appointment_id):
     return 'Form to edit appointment #.'.format(appointment_id)
 
+
 @app.route(
     '/appointments/<int:appointment_id>/delete/', methods=['DELETE'])
 def appointment_delete(appointment_id):
     raise NotImplementedError('DELETE')
+
 
 @app.route(
     '/appointments/create/',
@@ -29,9 +42,6 @@ def appointment_delete(appointment_id):
 def appointment_delete(appointment_id):
     return 'Form to create a new appointment.'
 
-@app.route('/static/imag/favicon.ico')
-def appointment_list():
-    #http://localhost:8080/static/img/favicon.ico
 
 if __name__ == '__main__':
-    app.run('0.0.0.0', 8080)
+    app.run()
