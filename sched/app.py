@@ -4,14 +4,17 @@ from sched.models import Base
 from flask import render_template
 from flask import *
 from flask import request, url_for
-from sched.forms import AppointmentForm
+from sched.forms import AppointmentForm, LoginForm
 from sched.models import Appointment
+from sched.models import User
 from sched import filters
-from flask.ext.login import login_required
+from flask.ext.login import LoginManager, current_user
+from flask.ext.login import login_user, logout_user, login_required
 app = Flask(__name__)
 app.config['DEBUG'] = True
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///sched.db'
+app.secret_key = 'secret_key'
 # Use Flask-SQLAlchemy for its engine and session
 # configuration. Load the extension, giving it the app object,
 # and override its default Model class with the pure
@@ -21,6 +24,15 @@ db.Model = Base
 
 filters.init_app(app)
 
+login_manager = LoginManager()
+login_manager.setup_app(app)
+login_manager.login_view = 'login'
+
+
+@login_manager.user_loader
+def load_user(user_id):
+    """Flask-Login hook to load a User instance from ID."""
+    return db.session.query(User).get(user_id)
 
 @app.route('/')
 def index():
@@ -93,7 +105,7 @@ def appointment_create():
     """Provide HTML form to create a new appointment."""
     form = AppointmentForm(request.form)
     if request.method == 'POST' and form.validate():
-        appt = Appointment()
+        appt = Appointment(user_id = current_user.id)
         form.populate_obj(appt)
         db.session.add(appt)
         db.session.commit()
@@ -105,25 +117,25 @@ def appointment_create():
 
 
 @app.route('/login/', methods=['GET', 'POST'])
-@login_required
 def login():
     if current_user.is_authenticated():
         return redirect(url_for('appointment_list'))
     form = LoginForm(request.form)
     error = None
+    print (form.username.data, form.password.data)
     if request.method == 'POST' and form.validate():
-    email = form.username.data.lower().strip()
-    password = form.password.data.lower().strip()
-    user, authenticated = \
-        User.authenticate(db.session.query, email,
-            password)
-    if authenticated:
-        login_user(user)
-        return redirect(url_for('appointment_list'))
-    else:
-        error = 'Incorrect username or password.'
+        email = form.username.data.lower().strip()
+        password = form.password.data.lower().strip()
+        user, authenticated = \
+            User.authenticate(db.session.query, email, password)
+        print(user, authenticated)
+        if authenticated:
+            login_user(user)
+            return redirect(url_for('appointment_list'))
+        else:
+            error = 'Incorrect username or password.'
     return render_template('user/login.html',
-        form=form, error=error)
+            form=form, error=error)
 
 @app.route('/logout/')
 @login_required
@@ -133,7 +145,7 @@ def logout():
 
 @app.errorhandler(404)
 def error_not_found(error):
-return render_template('error/not_found.html'), 404
+    return render_template('error/not_found.html'), 404
 
 
 if __name__ == '__main__':
