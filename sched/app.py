@@ -6,7 +6,10 @@ from flask import *
 from flask import request, url_for
 from sched.forms import AppointmentForm
 from sched.models import Appointment
+from sched import filters
+from flask.ext.login import login_required
 app = Flask(__name__)
+app.config['DEBUG'] = True
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///sched.db'
 # Use Flask-SQLAlchemy for its engine and session
@@ -16,6 +19,8 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///sched.db'
 db = SQLAlchemy(app)
 db.Model = Base
 
+filters.init_app(app)
+
 
 @app.route('/')
 def index():
@@ -23,6 +28,7 @@ def index():
 
 
 @app.route('/appointments/')
+@login_required
 def appointment_list():
     """Provide HTML listing of all appointments."""
 # Query: Get all Appointment objects, sorted by date.
@@ -33,6 +39,7 @@ def appointment_list():
 
 
 @app.route('/appointments/<int:appointment_id>/')
+@login_required
 def appointment_detail(appointment_id):
     """Provide HTML page with a given appointment."""
 # Query: get Appointment object by ID.
@@ -47,6 +54,7 @@ def appointment_detail(appointment_id):
 @app.route(
     '/appointments/<int:appointment_id>/edit/',
     methods=['GET', 'POST'])
+@login_required
 def appointment_edit(appointment_id):
     """Provide HTML form to edit a given appointment."""
     appt = db.session.query(Appointment).get(appointment_id)
@@ -65,6 +73,7 @@ def appointment_edit(appointment_id):
 
 @app.route(
     '/appointments/<int:appointment_id>/delete/', methods=['DELETE'])
+@login_required
 def appointment_delete(appointment_id):
     """Delete record using HTTP DELETE, respond with JSON."""
     appt = db.session.query(Appointment).get(appointment_id)
@@ -79,6 +88,7 @@ def appointment_delete(appointment_id):
 
 
 @app.route('/appointments/create/', methods=['GET', 'POST'])
+@login_required
 def appointment_create():
     """Provide HTML form to create a new appointment."""
     form = AppointmentForm(request.form)
@@ -92,6 +102,38 @@ def appointment_create():
 # Either first load or validation error at this point.
     return render_template('appointment/edit.html',
                            form=form)
+
+
+@app.route('/login/', methods=['GET', 'POST'])
+@login_required
+def login():
+    if current_user.is_authenticated():
+        return redirect(url_for('appointment_list'))
+    form = LoginForm(request.form)
+    error = None
+    if request.method == 'POST' and form.validate():
+    email = form.username.data.lower().strip()
+    password = form.password.data.lower().strip()
+    user, authenticated = \
+        User.authenticate(db.session.query, email,
+            password)
+    if authenticated:
+        login_user(user)
+        return redirect(url_for('appointment_list'))
+    else:
+        error = 'Incorrect username or password.'
+    return render_template('user/login.html',
+        form=form, error=error)
+
+@app.route('/logout/')
+@login_required
+def logout():
+    logout_user()
+    return redirect(url_for('login'))
+
+@app.errorhandler(404)
+def error_not_found(error):
+return render_template('error/not_found.html'), 404
 
 
 if __name__ == '__main__':

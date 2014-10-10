@@ -28,10 +28,10 @@ appointment_id=appt.id) }}">
 <p><i class="icon-home"></i> {{ appt.location }}</p>
 {% endif %}
 {% if appt.allday %}
-<p><i class="icon-calendar"></i> {{ appt.start}}</p>
+<p><i class="icon-calendar"></i> {{ appt.start | date}}</p>
 {% else %}
-<p><i class="icon-calendar"></i> {{ appt.start}}
-for {{ appt.duration}}</p>
+<p><i class="icon-calendar"></i> {{ appt.start | datetime}}
+for {{ appt.duration }}</p>
 {% endif %}
 {% if show_edit %}
 <div class="edit-controls">
