@@ -89,15 +89,15 @@ class Appointment(Base):
                      ForeignKey('user.id'), nullable=False)
     user = relationship(User, lazy='joined', join_depth=1)
 
-@property
-def duration(self):
-    delta = self.end - self.start
-    return delta.days * 24 * 60 * 60 + delta.seconds
+    @property
+    def duration(self):
+        delta = self.end - self.start
+        return delta.days * 24 * 60 * 60 + delta.seconds
 
 
-def __repr__(self):
-    return (u'<{self.__class__.__name__}: {self.id}>'
-            .format(self=self))
+    def __repr__(self):
+        return (u'<{self.__class__.__name__}: {self.id}>'
+                .format(self=self))
 
 if __name__ == '__main__':
     engine = create_engine('sqlite:///sched.db', echo=True)
@@ -112,4 +112,11 @@ if __name__ == '__main__':
     usuario._set_password("mayra")
     session.add(usuario)
     session.commit()
-
+    
+    usuario = User(
+        name='mayra',
+        email='sun.prinsses@hotmail.com',
+        active=True,)
+    usuario._set_password("mayra")
+    session.add(usuario)
+    session.commit()

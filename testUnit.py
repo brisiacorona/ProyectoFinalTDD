@@ -1,7 +1,7 @@
 import unittest
 from sched import forms
 from sched import filters
-from sched.app import app
+from sched import app
 from jinja2 import Environment
 from datetime import datetime, date, timedelta
 from datetime import timedelta
@@ -104,50 +104,61 @@ class filter(unittest.TestCase):
 
 class testModelUser(unittest.TestCase):
 
+    def testUserpass(self):
+        user = models.User(name="mayra", email="sun.prinsses@hotmail.com")
+        user._set_password("mayra")
+        assert "sha1" in user._get_password()
+        self.assertNotEqual(user._get_password(), "123456")
+        self.assertEqual(True, user.check_password("mayra"))
 
-	def testUserpass(self):
-		user = models.User(name="brisia", email="brisia.corona@cimat.mx")
-		user._set_password("123456")
-		assert "sha1" in user._get_password()
-		self.assertNotEqual(user._get_password(), "123456")
-		self.assertEqual(True, user.check_password("123456"))
-		self.assertNotEqual(True, user.check_password("1234"))
-		self.assertEqual(False, user.check_password(""))
-
-
-	def testUserPassNull(self):
-		user = models.User(name="brisia", email="brisia.corona@cimat.mx")
-		self.assertEqual(False, user.check_password("123456"))
-
-
-	def testUserStatus(self):
-		user = models.User(name="brisia", email="brisiacorona@cimat.mx")
+    def testStatusUser(self):
+		user = models.User(name="Nuevo", email="nuevo@gmail.com")
 		user._set_password("123456")
 		self.assertNotEqual(user.get_id(), 0)
 		self.assertNotEqual(user.is_active(), False)
-		self.assertNotEqual(user.is_anonymous(), True)
-		self.assertNotEqual(user.is_authenticated(), False)
-
-
-	def testUserAuthenticate(self):
+		
+    def testAuthenticateUser(self):
 		user, authenticate = models.User.authenticate(
-    	app.db.session.query, "brisiacorona@cimat.mx", "123456")
+    	app.db.session.query, "nuevo@gmail.com", "123456")
+		self.assertEqual(authenticate, False)
+		self.assertNotEqual(user, "None")
+
+    def testNullPasswordUser(self):
+		user = models.User(name="Nuevo", email="nuevo@gmail.com")
+		self.assertEqual(False, user.check_password("123456"))
+
+    def testActiveUser(self):
+		user, authenticate = models.User.authenticate(
+		app.db.session.query, "sun.prinsses@hotmail.com", "mayra")
 		self.assertNotEqual(authenticate, False)
-		self.assertNotEqual(user.name, "Brisia")
+		self.assertEqual(user.name, "mayra")
 
-
-	def testUserNotauthenticate(self):
+    def testNotExistUser(self):
 		user, authenticate = models.User.authenticate(
-    		app.db.session.query, "mariamota@cimat.mx", "123456")
+		app.db.session.query, "jamon@cimat.mx", "mayra")
 		self.assertEqual(authenticate, False)
 		self.assertEqual(user, None)
 
 
-	def testUserNotActiveAuthenticate(self):
-		user, authenticate = models.User.authenticate(
-    		app.db.session.query, "mariamota2@cimat.mx", "123456")
-		self.assertEqual(authenticate, False)
-		self.assertEqual(user.name, "No Activado")
+class testModelApponintment(unittest.TestCase):
+
+    def test_appointment_duration(self):
+        now = datetime.now()
+        appt = models.Appointment(
+            title='Prueba Unitaria', start=now,
+            end=now + timedelta(seconds=1800),
+            allday=False)
+        self.assertEqual(1800, appt.duration)
+        self.assertNotEqual(1801, appt.duration)
+
+    def testAppointmentR(self):
+        now = datetime.now()
+        appt = models.Appointment(
+            title='Prueba Unitaria Repre', start=now,
+            end=now + timedelta(seconds=1800),
+            allday=False)
+        self.assertNotEqual('<Appointment: 4>', appt.__repr__())
+
 
 if __name__ == '__main__':
     unittest.main()
