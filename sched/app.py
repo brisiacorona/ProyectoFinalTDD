@@ -34,6 +34,7 @@ def load_user(user_id):
     """Flask-Login hook to load a User instance from ID."""
     return db.session.query(User).get(user_id)
 
+
 @app.route('/')
 def index():
     return render_template('appointment/index.html')
@@ -69,18 +70,17 @@ def appointment_detail(appointment_id):
 @login_required
 def appointment_edit(appointment_id):
     """Provide HTML form to edit a given appointment."""
+    print ("hola")
     appt = db.session.query(Appointment).get(appointment_id)
     if appt is None:
         abort(404)
-        form = AppointmentForm(request.form, appt)
+    form = AppointmentForm(request.form, appt)
     if request.method == 'POST' and form.validate():
         form.populate_obj(appt)
         db.session.commit()
-# Success. Send the user back to the detail view.
-    return redirect(url_for('appointment_detail',
-                            appointment_id=appt.id))
-    return render_template('appointment/edit.html',
-                           form=form)
+        # Success. Send the user back to the detail view.
+        return redirect(url_for('appointment_detail',appointment_id=appt.id))
+    return render_template('appointment/edit.html', form=form)
 
 
 @app.route(
@@ -105,7 +105,7 @@ def appointment_create():
     """Provide HTML form to create a new appointment."""
     form = AppointmentForm(request.form)
     if request.method == 'POST' and form.validate():
-        appt = Appointment(user_id = current_user.id)
+        appt = Appointment(user_id=current_user.id)
         form.populate_obj(appt)
         db.session.add(appt)
         db.session.commit()
@@ -135,7 +135,8 @@ def login():
         else:
             error = 'Incorrect username or password.'
     return render_template('user/login.html',
-            form=form, error=error)
+                           form=form, error=error)
+
 
 @app.route('/logout/')
 @login_required
@@ -143,10 +144,13 @@ def logout():
     logout_user()
     return redirect(url_for('login'))
 
+
 @app.errorhandler(404)
 def error_not_found(error):
     return render_template('error/not_found.html'), 404
 
 
 if __name__ == '__main__':
+    doctest.testmod()
     app.run()
+    

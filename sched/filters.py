@@ -1,5 +1,5 @@
 """Custom filters for Jinja templating. Load with init_app function."""
-
+import doctest
 from jinja2 import Markup, evalcontextfilter, escape
 
 
@@ -136,3 +136,6 @@ def do_nl2br(context, value):
     if context.autoescape:
         formatted = Markup(formatted)
     return formatted
+
+if __name__ == '__main__':
+    doctest.testmod()
