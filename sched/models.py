@@ -5,7 +5,6 @@ from sqlalchemy.orm import synonym, relationship
 from sqlalchemy.ext.declarative import declarative_base
 from werkzeug import check_password_hash
 from werkzeug import generate_password_hash
-from datetime import timedelta
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 Base = declarative_base()
