@@ -2,7 +2,7 @@ Feature: Generating envents and testing login
 
 Scenario: Login
   Given:  Open page: http://127.0.0.1:5000/appointments
-  When: Inser email: "moon.prinsses@hotmail.com"
+  When: Insert email: "moon.prinsses@hotmail.com"
   And: Insert password: "mayra"
   Then: The user log
 
