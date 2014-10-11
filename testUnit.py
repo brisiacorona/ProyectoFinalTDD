@@ -5,6 +5,7 @@ from sched.app import app
 from jinja2 import Environment
 from datetime import datetime, date, timedelta
 from datetime import timedelta
+from sched import models
 
 
 class Form(unittest.TestCase):
@@ -34,80 +35,119 @@ class Form(unittest.TestCase):
 
 class filter(unittest.TestCase):
 
+    def testdatetime(self):
+        now = date(2010, 11, 11)
+        fecha = filters.do_datetime(now)
+        self.assertNotEqual(fecha, "2010-11-11 - Thursday")
 
-	def testdatetime(self):
-		now = date(2010, 11, 11)
-		fecha = filters.do_datetime(now)
-		self.assertNotEqual(fecha, "2010-11-11 - Thursday")
+    def testdatetime2(self):
+        now = datetime(2010, 11, 11, 13, 00, 00)
+        fecha = filters.do_datetime(now)
+        self.assertEqual(fecha, '2010-11-11 - Thursday at 1:00pm')
+
+    def testdatetimeNull(self):
+        fecha = filters.do_datetime(None)
+        self.assertNotEqual(fecha, "Today")
+        self.assertEqual(fecha, '')
+
+    def testdatetimeNullFormat(self):
+        now = datetime(2010, 11, 11, 14, 00, 00)
+        fecha = filters.do_datetime(now, None)
+        self.assertEqual(fecha, '2010-11-11 - Thursday at 2:00pm')
+
+    def testdatetimeFormat(self):
+        a = '%Y-%m-%d - %A'
+        now = datetime(2010, 11, 11, 14, 00, 00)
+        fecha = filters.do_datetime(now, a)
+        self.assertNotEqual(fecha, '2010-11-11 - Thursday at 2:00pm')
+
+    def testdateNull(self):
+        fechadate = filters.do_date(None)
+        self.assertEqual(fechadate, '')
+
+    def testdateNull(self):
+        now = datetime(2010, 11, 11, 13, 00, 00)
+        fechadate = filters.do_date(now)
+        self.assertNotEqual(fechadate, '2010-11-11 - Thursday at 1:00pm')
+        self.assertEqual(fechadate, '2010-11-11 - Thursday')
+
+    def testdurationhour(self):
+        time = filters.do_duration(3600)
+        self.assertNotEqual(time, "1 day")
+        self.assertEqual(time, "0 day, 1 hour, 0 minute, 0 second")
+
+    def testdurationdays(self):
+        time = filters.do_duration(258732)
+        self.assertEqual(time, "2 days, 23 hours, 52 minutes, 12 seconds")
+
+    def testdo_nl2br(self):
+        template_env = Environment(
+            autoescape=False,
+            extensions=['jinja2.ext.i18n', 'jinja2.ext.autoescape'])
+        text = "Texto con '\n' saltos '\n' juntos"
+        changes = filters.do_nl2br(template_env, text)
+        self.assertNotEqual(changes, "")
+        self.assertEqual(
+            changes, "Texto con &#39;<br />&#39; saltos &#39;<br />&#39; juntos")
+
+    def test_do_nl2br_with_Markup(self):
+        template_env = Environment(
+            autoescape=True,
+            extensions=['jinja2.ext.i18n', 'jinja2.ext.autoescape'])
+        text = "Texto con '\n' saltos '\n' <script>juntos</script>"
+        changes = filters.do_nl2br(template_env, text)
+        self.assertNotEqual(
+            changes, "Texto con &#39;<br />&#39; saltos &#39;<br />&#39; juntos")
+        self.assertEqual(
+            changes, "Texto con &#39;<br />&#39; saltos &#39;<br />&#39; &lt;script&gt;juntos&lt;/script&gt;")
 
 
-	def testdatetime2(self):
-		now = datetime(2010, 11, 11, 13, 00, 00)
-		fecha = filters.do_datetime(now)
-		self.assertEqual(fecha, '2010-11-11 - Thursday at 1:00pm')
+class testModelUser(unittest.TestCase):
 
 
-	def testdatetimeNull(self):
-		fecha = filters.do_datetime(None)
-		self.assertNotEqual(fecha, "Today")
-		self.assertEqual(fecha, '')
+	def testUserpass(self):
+		user = models.User(name="brisia", email="brisia.corona@cimat.mx")
+		user._set_password("123456")
+		assert "sha1" in user._get_password()
+		self.assertNotEqual(user._get_password(), "123456")
+		self.assertEqual(True, user.check_password("123456"))
+		self.assertNotEqual(True, user.check_password("1234"))
+		self.assertEqual(False, user.check_password(""))
 
 
-	def testdatetimeNullFormat(self):
-		now = datetime(2010, 11, 11, 14, 00, 00)
-		fecha = filters.do_datetime(now, None)
-		self.assertEqual(fecha, '2010-11-11 - Thursday at 2:00pm')
+	def testUserPassNull(self):
+		user = models.User(name="brisia", email="brisia.corona@cimat.mx")
+		self.assertEqual(False, user.check_password("123456"))
 
 
-	def testdatetimeFormat(self):
-		a = '%Y-%m-%d - %A'
-		now = datetime(2010, 11, 11, 14, 00, 00)
-		fecha = filters.do_datetime(now, a)
-		self.assertNotEqual(fecha, '2010-11-11 - Thursday at 2:00pm')
+	def testUserStatus(self):
+		user = models.User(name="brisia", email="brisiacorona@cimat.mx")
+		user._set_password("123456")
+		self.assertNotEqual(user.get_id(), 0)
+		self.assertNotEqual(user.is_active(), False)
+		self.assertNotEqual(user.is_anonymous(), True)
+		self.assertNotEqual(user.is_authenticated(), False)
 
 
-	def testdateNull(self):
-		fechadate = filters.do_date(None)
-		self.assertEqual(fechadate, '')
+	def testUserAuthenticate(self):
+		user, authenticate = models.User.authenticate(
+    	app.db.session.query, "brisiacorona@cimat.mx", "123456")
+		self.assertNotEqual(authenticate, False)
+		self.assertNotEqual(user.name, "Brisia")
 
 
-	def testdateNull(self):
-		now = datetime(2010, 11, 11, 13, 00, 00)
-		fechadate = filters.do_date(now)
-		self.assertNotEqual(fechadate, '2010-11-11 - Thursday at 1:00pm')
-		self.assertEqual(fechadate, '2010-11-11 - Thursday')
+	def testUserNotauthenticate(self):
+		user, authenticate = models.User.authenticate(
+    		app.db.session.query, "mariamota@cimat.mx", "123456")
+		self.assertEqual(authenticate, False)
+		self.assertEqual(user, None)
 
 
-	def testdurationhour(self):
-		time = filters.do_duration(3600)
-		self.assertNotEqual(time, "1 day")
-		self.assertEqual(time, "0 day, 1 hour, 0 minute, 0 second")
-
-
-	def testdurationdays(self):
-		time = filters.do_duration(258732)
-		self.assertEqual(time, "2 days, 23 hours, 52 minutes, 12 seconds")
-
-
-	def testdo_nl2br(self):
-		template_env = Environment(
-    	autoescape=False,
-    	extensions=['jinja2.ext.i18n', 'jinja2.ext.autoescape'])
-		text = "Texto con '\n' saltos '\n' juntos"
-		changes = filters.do_nl2br(template_env, text)
-		self.assertNotEqual(changes, "")
-		self.assertEqual(changes, "Texto con &#39;<br />&#39; saltos &#39;<br />&#39; juntos")
-
-
-	def test_do_nl2br_with_Markup(self):
-		template_env = Environment(
-    	autoescape=True,
-    	extensions=['jinja2.ext.i18n', 'jinja2.ext.autoescape'])
-		text = "Texto con '\n' saltos '\n' <script>juntos</script>"
-		changes = filters.do_nl2br(template_env, text)
-		self.assertNotEqual(changes, "Texto con &#39;<br />&#39; saltos &#39;<br />&#39; juntos")
-		self.assertEqual(changes, "Texto con &#39;<br />&#39; saltos &#39;<br />&#39; &lt;script&gt;juntos&lt;/script&gt;")
-
+	def testUserNotActiveAuthenticate(self):
+		user, authenticate = models.User.authenticate(
+    		app.db.session.query, "mariamota2@cimat.mx", "123456")
+		self.assertEqual(authenticate, False)
+		self.assertEqual(user.name, "No Activado")
 
 if __name__ == '__main__':
     unittest.main()
