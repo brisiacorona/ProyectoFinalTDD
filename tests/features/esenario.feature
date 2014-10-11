@@ -2,7 +2,7 @@ Feature: Generating envents and testing login
 
 Scenario: Login
   Given:  Open page: http://127.0.0.1:5000/appointments
-  When: Insert email: "moon.prinsses@hotmail.com"
+  When: Inser email: "moon.prinsses@hotmail.com"
   And: Insert password: "mayra"
   Then: The user log
 
@@ -20,7 +20,7 @@ Scenario: Create Appoiment
 
 Scenario: Edit Appoiment
   Given: Stay in edit template
-  when: Update data Chedule id title: "Cita con el viejo"
+  when: Update data Chedule id title: "CIta con el viejo"
   When: Insert a tittle of meeting: "Cita con alejandro"
   And: Insert a start: "2013-10-11 17:30:00"
   And: Insert a end: "2013-10-11 20:00:00"
