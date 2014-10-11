@@ -11,4 +11,4 @@ script:
   - coverage run --omit='*lettuce*,*fuzzywuzzy*' tests/features/steps.py
   - coverage report -m
   - nosetests --with-doctest --with-coverage -s app
-  -lettuce tests
+  - lettuce tests
