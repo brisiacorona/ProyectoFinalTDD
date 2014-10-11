@@ -8,8 +8,9 @@ before_install:
 # command to install dependencies
 install: "pip install -r requirements.txt"
 before_script:
-- "flake8 --ignore=F403 manage.py sched tests/features"
-- "flake8 --max-complexity=5 --ignore=F403 manage.py sched tests/features"
+- "flake8 --ignore=F403 manage.py sched"
+- "flake8 --ignore=E902 sched"
+- "flake8 --max-complexity=5 --ignore=F403 manage.py sched"
 # command to run tests
 script:
 - coverage run --omit="*site-packages*" testsUnit.py
