@@ -1,4 +1,3 @@
-from flask import Flask
 from flask.ext.sqlalchemy import SQLAlchemy
 from sched.models import Base
 from flask import render_template
@@ -70,7 +69,6 @@ def appointment_detail(appointment_id):
 @login_required
 def appointment_edit(appointment_id):
     """Provide HTML form to edit a given appointment."""
-    print ("hola")
     appt = db.session.query(Appointment).get(appointment_id)
     if appt is None:
         abort(404)
@@ -79,7 +77,7 @@ def appointment_edit(appointment_id):
         form.populate_obj(appt)
         db.session.commit()
         # Success. Send the user back to the detail view.
-        return redirect(url_for('appointment_detail',appointment_id=appt.id))
+        return redirect(url_for('appointment_detail', appointment_id=appt.id))
     return render_template('appointment/edit.html', form=form)
 
 
@@ -147,10 +145,9 @@ def logout():
 
 @app.errorhandler(404)
 def error_not_found(error):
-    return render_template('error/not_found.html'), 404
+    return render_template('not_found.html'), 404
 
 
 if __name__ == '__main__':
     doctest.testmod()
     app.run()
-    

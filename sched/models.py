@@ -21,10 +21,8 @@ class User(Base):
     active = Column(Boolean, default=True)
     _password = Column('password', String(100))
 
-
     def _get_password(self):
         return self._password
-
 
     def _set_password(self, password):
         if password:
@@ -44,7 +42,6 @@ class User(Base):
 
     @classmethod
     def authenticate(cls, query, email, password):
-        print('sola')
         email = email.strip().lower()
         user = query(cls).filter(cls.email == email).first()
         if user is None:
@@ -59,10 +56,8 @@ class User(Base):
     def is_active(self):
         return True
 
-
     def is_anonymous(self):
         return False
-
 
     def is_authenticated(self):
         return True
@@ -94,7 +89,6 @@ class Appointment(Base):
         delta = self.end - self.start
         return delta.days * 24 * 60 * 60 + delta.seconds
 
-
     def __repr__(self):
         return (u'<{self.__class__.__name__}: {self.id}>'
                 .format(self=self))
@@ -112,7 +106,7 @@ if __name__ == '__main__':
     usuario._set_password("mayra")
     session.add(usuario)
     session.commit()
-    
+
     usuario = User(
         name='mayra',
         email='sun.prinsses@hotmail.com',

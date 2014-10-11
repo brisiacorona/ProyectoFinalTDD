@@ -13,6 +13,7 @@ def init_app(app):
     # whether to autoescape
     app.jinja_env.filters['nl2br'] = evalcontextfilter(do_nl2br)
 
+
 def do_datetime(dt, format=None):
     """
     Jinja template filter to format a datetime object with date & time.

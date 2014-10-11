@@ -13,6 +13,7 @@ class AppointmentForm(Form):
 
 
 class LoginForm(Form):
+
     """
     Plantilla para el formulario de Login
     """
