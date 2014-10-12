@@ -13,9 +13,5 @@ class AppointmentForm(Form):
 
 
 class LoginForm(Form):
-
-    """
-    Plantilla para el formulario de Login
-    """
     username = TextField('Email', [required()])
     password = PasswordField('Password', [required()])

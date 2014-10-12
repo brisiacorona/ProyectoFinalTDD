@@ -1,4 +1,3 @@
-"""Custom filters for Jinja templating. Load with init_app function."""
 import doctest
 from jinja2 import Markup, evalcontextfilter, escape
 

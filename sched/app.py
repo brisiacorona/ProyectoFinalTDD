@@ -116,24 +116,29 @@ def appointment_create():
 
 @app.route('/login/', methods=['GET', 'POST'])
 def login():
-    if current_user.is_authenticated():
-        return redirect(url_for('appointment_list'))
+    Lappt()
     form = LoginForm(request.form)
     error = None
-    print (form.username.data, form.password.data)
-    if request.method == 'POST' and form.validate():
-        email = form.username.data.lower().strip()
-        password = form.password.data.lower().strip()
-        user, authenticated = \
-            User.authenticate(db.session.query, email, password)
-        print(user, authenticated)
-        if authenticated:
-            login_user(user)
-            return redirect(url_for('appointment_list'))
-        else:
-            error = 'Incorrect username or password.'
+
+    if request.method == 'POST':
+        if form.validate():
+            email = form.username.data.lower().strip()
+            password = form.password.data.lower().strip()
+            user, authenticated = \
+                User.authenticate(db.session.query, email, password)
+
+            if authenticated:
+                login_user(user)
+                return redirect(url_for('appointment_list'))
+            else:
+                error = 'Incorrect username or password.'
     return render_template('user/login.html',
                            form=form, error=error)
+
+
+def Lappt():
+    if current_user.is_authenticated():
+        return redirect(url_for('appointment_list'))
 
 
 @app.route('/logout/')
