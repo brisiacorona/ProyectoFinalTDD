@@ -16,21 +16,21 @@ Scenario: Create new appoitment
 	And: Click the button submit
 
 Scenario: Consult appoitment
-	Given: Enter the URL "http://127.0.0.1:5000/appointments/1/"
-	Then: You can see "appointment-detail" contains "limpieza dental"
+	Given: Enter the URL "http://127.0.0.1:5000/appointments/2/"
+	Then: You can see "appointment-detail" contains "alguna cosa"
 
 Scenario: If the appointments dont exist
 	Given: Enter the URL "http://127.0.0.1:5000/appointments/0/"
 	Then: You can see error "Not Found"
 
 Scenario: Edit a given appointment
-	Given: Enter the URL "http://127.0.0.1:5000/appointments/1/edit"
-	When: You update the field "title" with "Titulo Nuevo"
+	Given: Enter the URL "http://127.0.0.1:5000/appointments/2/edit"
+	When: You update the field "title" with "Nuevo"
 	And: Click the button submit
 	Then: You can see that the element with class "appointment-detail" contains "Titulo Nuevo"
 
 Scenario: Edit a date given appointment
-	Given: Enter the URL "http://127.0.0.1:5000/appointments/1/edit"
+	Given: Enter the URL "http://127.0.0.1:5000/appointments/2/edit"
 	When: You update the field "start" with actual date
 	And: Click the button submit
 	Then: You can see that the element with class "appointment-detail" contains the actual date
@@ -41,7 +41,7 @@ Scenario: List all appoitments
 
 Scenario: Delete appoitment
 	Given: Enter the URL "http://127.0.0.1:5000/appointments/"
-	When: You can select the appointment with the title "Cita con el abogado"
+	When: You can select the appointment with the title "para eliminar"
 	And: You can do click in the button "appointment-delete-link"
 	And: Enter the URL "http://127.0.0.1:5000/appointments/"
-	Then: You can see that the element with the class "appointment-detail" not contains "Cita con el abogado"
+	Then: You can see that the element with the class "appointment-detail" not contains "para eliminar"
