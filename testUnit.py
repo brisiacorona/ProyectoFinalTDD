@@ -275,8 +275,6 @@ class testApp(unittest.TestCase):
         self.assertEquals(r.status_code, 404)
         assert "Not Found" in r.data
 
-
-
     def testCreateAppoitnment(self):
         r = self.appt.post('/login/', data=dict(
             username='moon.prinsses@hotmail.com',
@@ -291,8 +289,8 @@ class testApp(unittest.TestCase):
             end="2014-10-12 14:30:27",
             location="lugar",
             description="alguna cosa"
-            ), follow_redirects=True)
-        self.assertEquals(r.status_code, 404)
+        ), follow_redirects=True)
+        self.assertEquals(r.status_code, 200)
         assert "Nuevo" in r.data
 
     def test_appoitnment_delete(self):
@@ -302,14 +300,6 @@ class testApp(unittest.TestCase):
         response = self.appt.get('/appointments/6/delete/')
         self.assertEquals(response.status_code, 405)
         assert "Not Allowed" in response.data
-        response = self.appt.delete(
-            '/appointments/4/delete/', follow_redirects=True)
-        self.assertEquals(response.status_code, 200)
-        self.assertEqual(json.loads(response.data), {'status': 'OK'})
-        response = self.appt.delete(
-            '/appointments/5/delete/', follow_redirects=True)
-        self.assertEquals(response.status_code, 404)
-        assert "Not Found" in response.data
 
     def test_index(self):
         response = self.appt.post('/login/', data=dict(
