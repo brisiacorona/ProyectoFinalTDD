@@ -152,6 +152,12 @@ class testModelUser(unittest.TestCase):
         self.assertNotEqual(user, "None")
     # 17
 
+    def testAuthenticateUserDos(self):
+        user, authenticate = models.User.authenticate(
+            app.db.session.query, "nuevo@gmail.com", None)
+        self.assertEqual(authenticate, False)
+        self.assertNotEqual(user, "None")
+
     def testNullPasswordUser(self):
         user = models.User(name="Nuevo", email="nuevo@gmail.com")
         self.assertEqual(False, user.check_password("123456"))
@@ -170,11 +176,6 @@ class testModelUser(unittest.TestCase):
         self.assertEqual(authenticate, False)
         self.assertEqual(user, None)
 
-    def testAuthenticateUserDos(self):
-        user, authenticate = models.User.authenticate(
-            app.db.session.query, "nuevo@gmail.com", None)
-        self.assertEqual(authenticate, False)
-        self.assertNotEqual(user, "None")
 
 class testModelApponintment(unittest.TestCase):
         # 20
@@ -230,6 +231,7 @@ class testApp(unittest.TestCase):
     # 26
 
     def testLogout(self):
+    
         r = self.appt.get("/logout/", data=dict(
             username='nuevo@gmail.com',
             password='123456'), follow_redirects=True)
@@ -262,17 +264,23 @@ class testApp(unittest.TestCase):
         self.assertEquals(r.status_code, 200)
         assert "Edit Appointment" in r.data
         assert "Add Appointment" not in r.data
-        r = self.appt.post('/appointments/3/edit/', data=dict(
+
+    def testEditappoitnmentDos(self):
+        r = self.appt.post('/login/', data=dict(
+            username='moon.prinsses@hotmail.com',
+            password='mayra'), follow_redirects=True)
+       
+        r2 = self.appt.post('/appointments/18/edit/', data=dict(
             title="cita",
             start="2014-10-09 2:46:56",
             end="2014-10-10 2:46:56",
             allday=0,
-            location="la oficina",
+            location="la casa",
             description="junta importante"
-        ), follow_redirects=True)
-        self.assertEquals(r.status_code, 200)
-        assert "cita" in r.data
-        assert "Evento" not in r.data
+            ), follow_redirects=True)
+        self.assertEquals(r2.status_code, 200)
+        assert "cita" in r2.data
+        assert "Evento" not in r2.data
 
     def testEditAppoitnmentNotExist(self):
         r = self.appt.post('/login/', data=dict(
@@ -290,7 +298,7 @@ class testApp(unittest.TestCase):
         self.assertEquals(r.status_code, 200)
         assert "Add Appointment" in r.data
         assert "Edit Appointment" not in r.data
-        r = self.appt.post('/appointments/create/', data=dict(
+        r = self.appt.post('/appointments/create/',data=dict(
             title="Nuevo",
             start="2014-10-11 03:32:40",
             end="2014-10-12 14:30:27",
@@ -301,17 +309,18 @@ class testApp(unittest.TestCase):
         assert "Nuevo" in r.data
 
     def test_appoitnment_delete(self):
-        rp=self.appt.post('/login/', data=dict(
+        response = self.appt.post('/login/', data=dict(
             username='moon.prinsses@hotmail.com',
             password='mayra'), follow_redirects=True)
-        #self.assertEqual(json.loads(rp.data), {'status': 'OK'})
-
-        r = self.appt.get("/appointments/5/", follow_redirects=True)
-        self.assertEquals(r.status_code, 404)
-        assert "Not Found" in r.data
-
-        re = self.appt.delete("/appointments/25/", follow_redirects=True)
-        self.assertEquals(re.status_code, 405)
+        response = self.appt.get('/appointments/1/delete/')
+        self.assertEquals(response.status_code, 405)
+        assert "Not Allowed" in response.data
+        response = self.appt.delete('/appointments/35/delete/', follow_redirects=True)
+        self.assertEquals(response.status_code, 200)
+        self.assertEqual(json.loads(response.data), {'status': 'OK'})
+        response = self.appt.delete('/appointments/666/delete/', follow_redirects=True)
+        self.assertEquals(response.status_code, 404)
+        assert "Not Found" in response.data 
 
         
         
