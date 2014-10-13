@@ -68,8 +68,8 @@ def then_you_can_see_group1(step, title):
 def when_you_update_the_field_group1_with_group2(step, field_id, value):
     with AssertContextManager(step):
         text_field = world.browser.find_element_by_id(field_id)
-    text_field.clear()
-    text_field.send_keys(value)
+        text_field.clear()
+        text_field.send_keys(value)
 
 fechaActual = datetime.now().strftime("%Y-%m-%d %l:%M:%S")
 fechaActualComparacion = datetime.now().strftime("%Y-%m-%d")
