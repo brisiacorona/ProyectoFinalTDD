@@ -170,6 +170,12 @@ class testModelUser(unittest.TestCase):
         self.assertEqual(authenticate, False)
         self.assertEqual(user, None)
 
+    def testAuthenticateUserDos(self):
+        user, authenticate = models.User.authenticate(
+            app.db.session.query, "nuevo@gmail.com", None)
+        self.assertEqual(authenticate, False)
+        self.assertNotEqual(user, "None")
+
 class testModelApponintment(unittest.TestCase):
         # 20
 
