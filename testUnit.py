@@ -300,8 +300,9 @@ class testApp(unittest.TestCase):
         assert "Edit Appointment" not in r.data
         r = self.appt.post('/appointments/create/',data=dict(
             title="Nuevo",
-            start="2014-10-11 03:32:40",
+            start="2014-10-11 3:32:40",
             end="2014-10-12 14:30:27",
+            allday=0,
             location="lugar",
             description="alguna cosa"
         ), follow_redirects=True)
@@ -315,7 +316,7 @@ class testApp(unittest.TestCase):
         response = self.appt.get('/appointments/1/delete/')
         self.assertEquals(response.status_code, 405)
         assert "Not Allowed" in response.data
-        response = self.appt.delete('/appointments/35/delete/', follow_redirects=True)
+        response = self.appt.delete('/appointments/40/delete/', follow_redirects=True)
         self.assertEquals(response.status_code, 200)
         self.assertEqual(json.loads(response.data), {'status': 'OK'})
         response = self.appt.delete('/appointments/666/delete/', follow_redirects=True)
