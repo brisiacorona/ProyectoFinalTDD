@@ -264,8 +264,9 @@ class testApp(unittest.TestCase):
         assert "Add Appointment" not in r.data
         r = self.appt.post('/appointments/3/edit/', data=dict(
             title="cita",
-            start="2014-10-09 02:46:56.000000",
-            end="2014-10-10 02:46:56.000000",
+            start="2014-10-09 2:46:56",
+            end="2014-10-10 2:46:56",
+            allday=0,
             location="la oficina",
             description="junta importante"
         ), follow_redirects=True)
