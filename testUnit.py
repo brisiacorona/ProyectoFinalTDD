@@ -270,7 +270,7 @@ class testApp(unittest.TestCase):
             username='moon.prinsses@hotmail.com',
             password='mayra'), follow_redirects=True)
        
-        r2 = self.appt.post('/appointments/45/edit/', data=dict(
+        r2 = self.appt.post('/appointments/46/edit/', data=dict(
             title="cita",
             start="2014-10-09 2:46:56",
             end="2014-10-10 2:46:56",
@@ -316,7 +316,7 @@ class testApp(unittest.TestCase):
         response = self.appt.get('/appointments/1/delete/')
         self.assertEquals(response.status_code, 405)
         assert "Not Allowed" in response.data
-        response = self.appt.delete('/appointments/44/delete/', follow_redirects=True)
+        response = self.appt.delete('/appointments/10/delete/', follow_redirects=True)
         self.assertEquals(response.status_code, 200)
         self.assertEqual(json.loads(response.data), {'status': 'OK'})
         response = self.appt.delete('/appointments/666/delete/', follow_redirects=True)

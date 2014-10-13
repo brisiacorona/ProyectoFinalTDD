@@ -41,7 +41,7 @@ Scenario: List all appoitments
 
 Scenario: Delete appoitment
 	Given: Enter the URL "http://127.0.0.1:5000/appointments/"
-	When: You can select the appointment with the title "Cita con el abogado"
+	When: You can select the appointment with the title "cita"
 	And: You can do click in the button "appointment-delete-link"
 	And: Enter the URL "http://127.0.0.1:5000/appointments/"
-	Then: You can see that the element with the class "appointment-detail" not contains "Notariar el titulo"
+	Then: You can see that the element with the class "appointment-detail" not contains "junta importante"

@@ -92,7 +92,7 @@ class Appointment(Base):
         return (u'<{self.__class__.__name__}: {self.id}>'
                 .format(self=self))
 
-if __name__ == '__main__':
+"""if __name__ == '__main__':
     engine = create_engine('sqlite:///sched.db', echo=True)
     Base.metadata.create_all(engine)
     Session = sessionmaker(bind=engine)
@@ -112,4 +112,4 @@ if __name__ == '__main__':
         active=True,)
     usuario._set_password("mayra")
     session.add(usuario)
-    session.commit()
+    session.commit()"""
