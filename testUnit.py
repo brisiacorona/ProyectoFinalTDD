@@ -170,7 +170,6 @@ class testModelUser(unittest.TestCase):
         self.assertEqual(authenticate, False)
         self.assertEqual(user, None)
 
-
 class testModelApponintment(unittest.TestCase):
         # 20
 
@@ -225,17 +224,18 @@ class testApp(unittest.TestCase):
     # 26
 
     def testLogout(self):
-        r = self.appt.get("/logout/")
-        self.assertEquals(r.status_code, 302)
-        assert 'Redirecting' in r.data
+        r = self.appt.get("/logout/", data=dict(
+            username='nuevo@gmail.com',
+            password='123456'), follow_redirects=True)
+        self.assertEquals(r.status_code, 200)
+        assert ' ' in r.data
     # 27
 
     def testApptDetail(self):
         r = self.appt.post('/login/', data=dict(
             username='moon.prinsses@hotmail.com',
             password='mayra'), follow_redirects=True)
-        r = self.appt.get('/appointments/6/')
-        self.assertEquals(r.status_code, 200)
+        r = self.appt.get('/appointments/3/')
         assert "cita" in r.data
     # 28
 
@@ -252,11 +252,11 @@ class testApp(unittest.TestCase):
         r = self.appt.post('/login/', data=dict(
             username='moon.prinsses@hotmail.com',
             password='mayra'), follow_redirects=True)
-        r = self.appt.get('/appointments/6/edit/')
+        r = self.appt.get('/appointments/3/edit/')
         self.assertEquals(r.status_code, 200)
         assert "Edit Appointment" in r.data
         assert "Add Appointment" not in r.data
-        r = self.appt.post('/appointments/6/edit/', data=dict(
+        r = self.appt.post('/appointments/3/edit/', data=dict(
             title="cita",
             start="2014-10-09 02:46:56.000000",
             end="2014-10-10 02:46:56.000000",
@@ -294,21 +294,20 @@ class testApp(unittest.TestCase):
         assert "Nuevo" in r.data
 
     def test_appoitnment_delete(self):
-        response = self.appt.post('/login/', data=dict(
+        rp=self.appt.post('/login/', data=dict(
             username='moon.prinsses@hotmail.com',
             password='mayra'), follow_redirects=True)
-        response = self.appt.get('/appointments/6/delete/')
-        self.assertEquals(response.status_code, 405)
-        assert "Not Allowed" in response.data
+        #self.assertEqual(json.loads(rp.data), {'status': 'OK'})
 
-    def test_appoitnment_delete2(self):
-        response = self.appt.post('/login/', data=dict(
-            username='moon.prinsses@hotmail.com',
-            password='mayra'), follow_redirects=True)
-        response = self.appt.get('/appointments/5/delete/')
-        self.assertEquals(response.status_code, 405)
-        assert "Not Allowed" in response.data
+        r = self.appt.get("/appointments/5/", follow_redirects=True)
+        self.assertEquals(r.status_code, 404)
+        assert "Not Found" in r.data
 
+        re = self.appt.delete("/appointments/25/", follow_redirects=True)
+        self.assertEquals(re.status_code, 405)
+
+        
+        
     def test_index(self):
         response = self.appt.post('/login/', data=dict(
             username='moon.prinsses@hotmail.com',
