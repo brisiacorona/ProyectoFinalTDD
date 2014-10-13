@@ -301,6 +301,14 @@ class testApp(unittest.TestCase):
         self.assertEquals(response.status_code, 405)
         assert "Not Allowed" in response.data
 
+    def test_appoitnment_delete2(self):
+        response = self.appt.post('/login/', data=dict(
+            username='moon.prinsses@hotmail.com',
+            password='mayra'), follow_redirects=True)
+        response = self.appt.get('/appointments/5/delete/')
+        self.assertEquals(response.status_code, 405)
+        assert "Not Allowed" in response.data
+
     def test_index(self):
         response = self.appt.post('/login/', data=dict(
             username='moon.prinsses@hotmail.com',
